@@ -5,22 +5,32 @@ library(hrbrthemes)
 library(lme4)
 library(lmerTest)
 
+
+
+# model parameters and design choices
+
+# SD at the observation level
+SD <- 0.2
+# SD between sites (random intercepts)
+SD.site <- 0.2
+# number of replicates (no of sites per source type)
+n.rep <- 3
+# mean relative abundance in each source type
+source.effect <- c(Human = 1, Livestock = 1, Aquaculture = 2)
+# % decline with each distance unit
+dist.effect <- 0.4
+# mean log abundance at distance = 0 and source = human or livestock
+intercept <- log(4)
+
+
+
 # set up study design
 sources <- c("Human", "Livestock", "Aquaculture")
 distances <- 0:2
-n.rep <- 3
 dat <- expand.grid(rep = 1:n.rep, Distance = distances, Source = sources)
 dat$site <- paste(dat$Source, dat$rep, sep = "-")
 
-# model parameters
-SD <- 0.2
-SD.site <- 0.2
 
-# mean relative abundance in each source type
-source.effect <- c(Human = 1, Livestock = 1, Aquaculture = 2)
-
-# % decline with each distance unit
-dist.effect <- 0.4
 
 
 # simulate log relative abundance
@@ -29,7 +39,7 @@ simdat <-
     design.data = dat, 
     fixed.eff = 
       list(
-        intercept = log(4),
+        intercept = intercept,
         Distance = log(dist.effect), 
         Source = log(source.effect)),
     SD = SD,
