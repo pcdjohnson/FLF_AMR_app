@@ -1,11 +1,11 @@
 # Power analysis for Taya's FLF app
+
+# load packages
 library(GLMMmisc)
 library(ggplot2)
 library(hrbrthemes)
 library(lme4)
 library(lmerTest)
-
-
 
 # model parameters and design choices
 
@@ -17,21 +17,16 @@ SD.site <- 0.2
 n.rep <- 3
 # mean relative abundance in each source type
 source.effect <- c(Human = 1, Livestock = 1, Aquaculture = 2)
-# % decline with each distance unit
+# relative decline with each additional distance unit
 dist.effect <- 0.4
 # mean log abundance at distance = 0 and source = human or livestock
 intercept <- log(4)
-
-
 
 # set up study design
 sources <- c("Human", "Livestock", "Aquaculture")
 distances <- 0:2
 dat <- expand.grid(rep = 1:n.rep, Distance = distances, Source = sources)
 dat$site <- paste(dat$Source, dat$rep, sep = "-")
-
-
-
 
 # simulate log relative abundance
 simdat <-
@@ -46,12 +41,12 @@ simdat <-
     rand.V = c(site = SD.site^2))
 simdat$Abundance <- exp(simdat$response)
 
+# plot the simulated data
 ggplot(data = simdat, mapping = aes(x = Distance, y = Abundance, group = site, color = Source)) +
   geom_point() +
   geom_line() 
 
-
+# calculate a p-value for the null hypothesis that all sources have the same mean log abundance
 mod1 <- lmer(response ~ Source + Distance + (1 | site), data = simdat, REML = FALSE)
 mod0 <- update(mod1, ~ . - Source)
 anova(mod0, mod1)[2, "Pr(>Chisq)"]
-  
