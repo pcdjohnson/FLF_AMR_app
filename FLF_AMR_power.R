@@ -27,6 +27,7 @@ sources <- c("Human", "Livestock", "Aquaculture")
 distances <- 0:2
 dat <- expand.grid(rep = 1:n.rep, Distance = distances, Source = sources)
 dat$site <- paste(dat$Source, dat$rep, sep = "-")
+dat <- dat[order(dat$site), ]
 
 # simulate log relative abundance
 simdat <-
