@@ -16,7 +16,7 @@ SD.site <- 0.2
 # number of replicates (no of sites per source type)
 n.rep <- 3
 # mean relative abundance in each source type
-source.effect <- c(Human = 1, Livestock = 1, Aquaculture = 2)
+source.effect <- c(Human = 2, Livestock = sqrt(2), Aquaculture = 1)
 # relative decline with each additional distance unit
 dist.effect <- 0.4
 # mean log abundance at distance = 0 and source = human or livestock
