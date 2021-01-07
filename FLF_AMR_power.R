@@ -11,6 +11,9 @@ rm(list = ls())
 # the likely large scale of the counts (100s to 1000s) this would likely make no substantial
 # difference and would slow down the simulations.
 
+# The power analysis will simulate data from the GLMM as specified below and estimate
+# power as the proportion of tests giving P < 0.05.
+
 ### Aims
 
 # This code will estimate power for the following objective:
@@ -30,7 +33,13 @@ library(lme4)
 library(lmerTest)
 
 
-### model parameters and design choices
+### settings, model parameters and design choices
+
+# start timer
+start.time <- Sys.time()
+
+# how many simulations to run?
+nsim <- 100
 
 # which countries?
 countries <- c("TZ", "UG", "KE")
@@ -79,40 +88,59 @@ dat <- droplevels(dat[!(dat$Country != "TZ" & dat$Distance > 0), ])
 # dat encodes the design of the study
 dat
 
-# simulate log relative abundance
-simdat <-
-  sim.glmm(
-    design.data = dat, 
-    fixed.eff = 
-      list(
-        intercept = intercept,
-        Distance = log(dist.effect), 
-        Source = log(source.effect)),
-    SD = SD,
-    rand.V = c(site = SD.site^2))
-simdat$Abundance <- exp(simdat$response)
+# function to simulate log relative abundance
+simdat.fn <-
+  function() {
+    simdat <-
+      sim.glmm(
+        design.data = dat, 
+        fixed.eff = 
+          list(
+            intercept = intercept,
+            Distance = log(dist.effect), 
+            Source = log(source.effect)),
+        SD = SD,
+        rand.V = c(site = SD.site^2))
+    simdat$Abundance <- exp(simdat$response)
+    simdat
+  }
 
-# plot the simulated data
-ggplot(data = simdat, mapping = aes(x = Distance, y = Abundance, group = site, 
-                                    color = Source, shape = Country)) +
+simdat.fn()
+
+# plot an example of the simulated data
+ggplot(data = simdat.fn(), mapping = aes(x = Distance, y = Abundance, group = site, 
+                                         color = Source, shape = Country)) +
   geom_point() +
   geom_line() 
 
-asdf
 
+simres.list <- 
+  lapply(1:nsim, function(i) {
+    # create subset data sets for each objective:
+    simdat <- simdat.fn()
+    simdat.1a <- droplevels(simdat[simdat$Distance == 0, ])
+    simdat.1b <- droplevels(simdat[simdat$Country == "TZ", ])
+    
+    # objective 1a:
+    # calculate a p-value for the null hypothesis that all sources have the same mean log abundance
+    mod1.1a <- glm(response ~ Source, data = simdat.1a)
+    mod0.1a <- update(mod1.1a, ~ . - Source)
+    p.1a <- anova(mod0.1a, mod1.1a, test = "Chisq")[2, "Pr(>Chi)"]
+    
+    # objective 1b:
+    # calculate a p-value for the null hypothesis that all distances have the same mean log abundance
+    mod1.1b <- lmer(response ~ Source + Distance + (1 | site), data = simdat.1b, REML = FALSE)
+    mod0.1b <- update(mod1.1b, ~ . - Distance)
+    p.1b <- anova(mod0.1b, mod1.1b)[2, "Pr(>Chisq)"]
+    
+    # output p-values
+    c(power.1a = p.1a, power.1b = p.1b)
+  })
 
-# calculate a p-value for the null hypothesis that all sources have the same mean log abundance
-#mod1 <- lmer(response ~ Source + Distance + (1 | site), data = simdat, REML = FALSE)
-#mod0 <- update(mod1, ~ . - Source)
-anova(mod0, mod1)[2, "Pr(>Chisq)"]
+simres <- do.call("rbind", simres.list)
 
+apply(simres < 0.05, 2, mean)
 
-simdat0 <- droplevels(simdat[simdat$Distance == 0, ])
-
-
-###### distance/spatial effect #####
-#' for a subset of sites sample at distances 1 & 2
-#' for each sampling site, at least 2 samples at dist 1 and at dist 2
-#' do this just for one country (TZ), so 1 sample at dist 0, 2 at dist 1 and 2 at dist 2 per site
-#' (n = 45 across the whole distance analysis)
-
+# stop timer and show time elapsed
+finish.time <- Sys.time()
+print(finish.time - start.time)
