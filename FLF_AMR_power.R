@@ -28,7 +28,7 @@ rm(list = ls())
 ### load packages
 library(GLMMmisc) # available via devtools::install_github("pcdjohnson/GLMMmisc")
 library(ggplot2)
-library(hrbrthemes)
+#library(hrbrthemes)
 library(lme4)
 library(lmerTest)
 
