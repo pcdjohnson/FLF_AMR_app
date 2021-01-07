@@ -8,7 +8,7 @@ rm(list = ls())
 # multiplicative effects on the count scale to additive effects on the log scale.
 # An alternative would be to treat the abundances as counts and assume a count distribution 
 # allowing for overdispersion (e.g. Poisson-lognormal, negative binomial, CMP), but given 
-# the likely large scale of the counts (100s to 1000s) this would likely make no substantial
+# the likely large scale of the counts (10s to 100s) this would likely make no substantial
 # difference and would slow down the simulations.
 
 # The power analysis will simulate data from the GLMM as specified below and estimate
@@ -28,9 +28,8 @@ rm(list = ls())
 ### load packages
 library(GLMMmisc) # available via devtools::install_github("pcdjohnson/GLMMmisc")
 library(ggplot2)
-#library(hrbrthemes)
 library(lme4)
-library(lmerTest)
+library(parallel)
 
 
 ### settings, model parameters and design choices
@@ -39,7 +38,7 @@ library(lmerTest)
 start.time <- Sys.time()
 
 # how many simulations to run?
-nsim <- 100
+nsim <- 10000
 
 # which countries?
 countries <- c("TZ", "UG", "KE")
@@ -48,7 +47,8 @@ countries <- c("TZ", "UG", "KE")
 n.rep <- 3
 
 # source types and their mean relative abundances of AMR genes
-source.effect <- c(Human = 5, Livestock = 3, Aquaculture = 1)
+#source.effect <- c(Human = 5, Livestock = 3, Aquaculture = 1)
+source.effect <- c(Human = 4, Livestock = 2, Aquaculture = 1)
 sources <- names(source.effect)
 
 # samples will be taken at the source (distance = 0)
@@ -63,7 +63,8 @@ length(source.effect) * n.rep * length(countries)
 #??????????? on what basis ?????????????
 
 # relative decline of abundance with each additional distance unit
-dist.effect <- 0.4 ### 60% decline per distance unit (based on Chu)
+#dist.effect <- 0.4 ### 60% decline per distance unit (based on Chu)
+dist.effect <- 0.7 
 
 # mean log abundance at distance = 0 and source = human or livestock
 intercept <- log(4)   ##### probably doesn't make a difference - check  
@@ -71,7 +72,7 @@ intercept <- log(4)   ##### probably doesn't make a difference - check
 # SD at the observation level (variation within site over repeated sampling)
 # Rowe et al 2016 found only about 10% changes over time. Convert this to a 
 # relative rate following Biometrics, Vol. 56, No. 3 (Sep., 2000), pp. 909-914.
-SD <- inv.mrr(1.1)
+SD <- inv.mrr(2)
 
 # SD between sites (random intercepts)
 SD.site <- inv.mrr(2) #### this should equate to ~2x diff between sites of same source based on Chu
@@ -111,11 +112,12 @@ simdat.fn()
 ggplot(data = simdat.fn(), mapping = aes(x = Distance, y = Abundance, group = site, 
                                          color = Source, shape = Country)) +
   geom_point() +
-  geom_line() 
-
-
+  stat_summary(fun = "mean", geom = "line")
+  
+# looping over multiple simulated data sets, test the two null hypotheses
+# (objectives 1a and 1b), outputting the p-values
 simres.list <- 
-  lapply(1:nsim, function(i) {
+  mclapply(1:nsim, function(i) {
     # create subset data sets for each objective:
     simdat <- simdat.fn()
     simdat.1a <- droplevels(simdat[simdat$Distance == 0, ])
@@ -135,10 +137,10 @@ simres.list <-
     
     # output p-values
     c(power.1a = p.1a, power.1b = p.1b)
-  })
-
+  }, mc.cores = detectCores() - 1)
 simres <- do.call("rbind", simres.list)
 
+# calculate power as the proportion of p-values < 0.05
 apply(simres < 0.05, 2, mean)
 
 # stop timer and show time elapsed
