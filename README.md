@@ -1,2 +1,2 @@
-# FLF_AMP_app
+# FLF_AMR_app
 Power analysis for AMR project.
