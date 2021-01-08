@@ -56,8 +56,8 @@ n.rep <- 3
 # source types and their mean relative abundances of AMR genes.
 # (choose effect sizes by commenting out lines that aren't used.)
 #source.effect <- c(Human = 5, Livestock = 5, Aquaculture = 1)
-#source.effect <- c(Human = 5, Livestock = 3, Aquaculture = 1)
-source.effect <- c(Human = 3, Livestock = 3, Aquaculture = 1)
+source.effect <- c(Human = 5, Livestock = 3, Aquaculture = 1)
+#source.effect <- c(Human = 3, Livestock = 3, Aquaculture = 1)
 sources <- names(source.effect)
 
 # samples will be taken in al countries at the source (distance = 0),
@@ -89,6 +89,13 @@ SD <- sqrt(inv.mrr(1.5))
 # SD between sites (random intercepts)
 SD.site <- sqrt(inv.mrr(2)) 
 # this equates to ~2x diff between sites of same source based on Chu et al.
+
+# note that the observation-level noise will contribute to the inter-site variation
+# so that for objective 1a, the actual residual SD will be 
+sqrt(SD^2 + SD.site^2)
+# which equates to a rate ratio of
+mrr(SD^2 + SD.site^2)
+
 
 # set up study design
 dat <- expand.grid(Country = countries, rep = 1:n.rep, Distance = distances, Source = sources)
