@@ -156,7 +156,7 @@ simres.list <-
     # objective 1b:
     # calculate a p-value for the null hypothesis that all distances have the same mean log abundance.
     # fit a random effect between the sites and test for a distance effect.
-    # use maximum likelihood, not REML, to get comparable likelihoods. 
+    # use maximum likelihood, not REML, as is required for comparable likelihoods. 
     mod1.1b <- lmer(response ~ Source + Distance + (1 | site), data = simdat.1b, REML = FALSE)
     mod0.1b <- update(mod1.1b, ~ . - Distance)
     p.1b <- anova(mod0.1b, mod1.1b)[2, "Pr(>Chisq)"]
