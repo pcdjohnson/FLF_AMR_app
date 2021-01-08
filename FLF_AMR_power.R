@@ -54,7 +54,7 @@ countries <- c("TZ", "UG", "KE")
 n.rep <- 3
 
 # source types and their mean relative abundances of AMR genes
-source.effect <- c(Human = 4, Livestock = 2, Aquaculture = 1)
+source.effect <- c(Human = 3, Livestock = 3, Aquaculture = 1)
 sources <- names(source.effect)
 
 # samples will be taken in al countries at the source (distance = 0),
