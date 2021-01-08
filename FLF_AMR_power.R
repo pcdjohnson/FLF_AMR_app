@@ -53,7 +53,10 @@ countries <- c("TZ", "UG", "KE")
 # number of replicates (no of sites per source type per country)
 n.rep <- 3
 
-# source types and their mean relative abundances of AMR genes
+# source types and their mean relative abundances of AMR genes.
+# (choose effect sizes by commenting out lines that aren't used.)
+#source.effect <- c(Human = 5, Livestock = 5, Aquaculture = 1)
+#source.effect <- c(Human = 5, Livestock = 3, Aquaculture = 1)
 source.effect <- c(Human = 3, Livestock = 3, Aquaculture = 1)
 sources <- names(source.effect)
 
