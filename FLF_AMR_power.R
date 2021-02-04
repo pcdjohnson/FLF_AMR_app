@@ -71,6 +71,7 @@ length(source.effect) * n.rep * length(countries)
 
 # relative decline of abundance with each additional distance unit
 # in another study (Chu et al.) a ~60% decline per km has been observed.
+  #(this study was done using sediments; similar studies of water column unavailable)
 # we will power the study to detect effects in this range, and smaller, down to
 # a 25% reduction per distance unit
 dist.effect <- 0.75
@@ -81,7 +82,7 @@ intercept <- log(4)
 # (in fact the power estimate isn't affected by this assumption)
 
 # SD at the observation level (variation within sites over repeated sampling)
-# Rowe et al 2016 found only about 10% changes over time. However we are sampling in
+# Rowe et al 2016 found only about 10% changes over time (across different years). However we are sampling in
 # different directions at the same distance, so we assume 50%. Convert this from a 
 # relative rate to a SD following Biometrics, Vol. 56, No. 3 (Sep., 2000), pp. 909-914.
 SD <- sqrt(inv.mrr(1.5))
@@ -176,3 +177,8 @@ hist(simres[, "MRR.1a"])
 # stop timer and show time elapsed
 finish.time <- Sys.time()
 print(finish.time - start.time)
+
+#Chu et al. Metagenomics Reveals the Impact of Wastewater Treatment Plants on the Dispersal of Microorganisms and Genes in Aquatic Sediments.
+  #Applied and Environmental Microbiology (2018) 84(5):e02168-17
+#Rowe et al. Comparative metagenomics reveals a diverse range of antimicrobial resistance genes in effluents entering a river catchment.
+  #Water Science and Technology (2016) 73(7):1541-9
