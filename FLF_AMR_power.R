@@ -42,7 +42,7 @@ library(parallel)
 start.time <- Sys.time()
 
 # how many simulations to run?
-nsim <- 100
+nsim <- 10000
 
 # which countries?
 countries <- c("TZ", "UG", "KE")
@@ -55,10 +55,10 @@ source.effect.list <-
   list(
     c(Human = 5, Pig = 5, Poultry = 5, Aquaculture = 1),
     c(Human = 5, Pig = 3, Poultry = 3, Aquaculture = 1),
-    c(Human = 3, Pig = 3, Poultry = 3, Aquaculture = 1))
+    c(Human = 3, Pig = 3, Poultry = 3, Aquaculture = 1)) # this should give the least power
 
 # choose effect sizes
-source.effect <- source.effect.list[[2]]
+source.effect <- source.effect.list[[3]]
 sources <- names(source.effect)
 
 # samples will be taken at the source (distance = 0) at all replicate sites,
@@ -67,8 +67,9 @@ sources <- names(source.effect)
 distances <- c(0, 1, 1, 1, 2, 2, 2)
 
 # two types of site will be sampled: medium and high intensity 
-intensity.effect <- c(M = sqrt(2)/2, H = sqrt(2))
-intensity.effect["H"]/intensity.effect["M"] # twofold effect
+intensity.fold.diff <- 2
+intensity.effect <- c(M = sqrt(intensity.fold.diff)/intensity.fold.diff, H = sqrt(intensity.fold.diff))
+intensity.effect["H"]/intensity.effect["M"] # fold effect
 exp(mean(log(intensity.effect))) # the geometric mean is 1, so no effect on mean log(ARG count)
 intensities <- names(intensity.effect)
 
