@@ -67,7 +67,7 @@ sources <- names(source.effect)
 distances <- c(0, 1, 1, 1, 2, 2, 2)
 
 # two types of site will be sampled: medium and high intensity 
-intensity.fold.diff <- 2
+intensity.fold.diff <- 3
 intensity.effect <- c(M = sqrt(intensity.fold.diff)/intensity.fold.diff, H = sqrt(intensity.fold.diff))
 intensity.effect["H"]/intensity.effect["M"] # fold effect
 exp(mean(log(intensity.effect))) # the geometric mean is 1, so no effect on mean log(ARG count)
