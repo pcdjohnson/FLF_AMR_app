@@ -4,20 +4,21 @@ rm(list = ls())
 ### Aims
 
 # This code will estimate power for the following objective:
-# Obj 1: Determine the abundance and diversity of antimicrobial 
-# resistance genes (ARG) in water and sediments in at-risk sites.
+# Obj 1: Identify the spatio-temporal patterns of antimicrobial 
+# resistance gene (AMRG) abundance in water and their relationship to different 
+# anthropogenic activities.
 # Specifically, the aims of the analyses are to detect:
-# 1a.i: Differences in ARG abundance among sources 
-#     (null hypothesis: equal ARG abundance between sources)
-# 1a.ii: Differences in ARG abundance between medium and high intensity sites 
-#     (null hypothesis: equal ARG abundance between intensities)
-# 1b: Changes in ARG abundance in relation to the distance from sources 
-#     (null hypothesis: equal ARG abundance across distances)
+# 1a.i: Differences in AMRG abundance among sources (type)
+#     (null hypothesis: equal AMRG abundance between sources)
+# 1a.ii: Differences in AMRG abundance between low and high intensity sites 
+#     (null hypothesis: equal AMRG abundance between intensities)
+# 1b: Changes in AMRG abundance in relation to the distance from sources 
+#     (null hypothesis: equal AMRG abundance across distances)
 
 
 ### General approach
 
-# Because ARG abundance is generally right-skewed, we assume that residual variation will be
+# Because AMRG abundance is generally right-skewed, we assume that residual variation will be
 # approximately normally distributed on the log scale, which will convert 
 # multiplicative effects on the abundance scale to additive effects on the log scale.
 # An alternative would be to treat the abundances as counts and assume a count distribution 
@@ -66,7 +67,7 @@ sources <- names(source.effect)
 # and distance = 2 (n = 3)
 distances <- c(0, 1, 1, 1, 2, 2, 2)
 
-# two types of site will be sampled: medium and high intensity 
+# two types of site will be sampled: low and high intensity 
 intensity.fold.diff <- 3
 intensity.effect <- c(M = 1/sqrt(intensity.fold.diff), H = sqrt(intensity.fold.diff))
 intensity.effect["H"]/intensity.effect["M"] # fold effect
@@ -225,7 +226,7 @@ hist(simres[, "MRR.1a.i"])
 finish.time <- Sys.time()
 print(finish.time - start.time)
 
-#Chu et al. Metagenomics Reveals the Impact of Wastewater Treatment Plants on the Dispersal of Microorganisms and Genes in Aquatic Sediments.
-#Applied and Environmental Microbiology (2018) 84(5):e02168-17
-#Rowe et al. Comparative metagenomics reveals a diverse range of antimicrobial resistance genes in effluents entering a river catchment.
-#Water Science and Technology (2016) 73(7):1541-9
+# Chu et al. Metagenomics Reveals the Impact of Wastewater Treatment Plants on the Dispersal of Microorganisms and Genes in Aquatic Sediments.
+# Applied and Environmental Microbiology (2018) 84(5):e02168-17
+# Rowe et al. Comparative metagenomics reveals a diverse range of antimicrobial resistance genes in effluents entering a river catchment.
+# Water Science and Technology (2016) 73(7):1541-9
